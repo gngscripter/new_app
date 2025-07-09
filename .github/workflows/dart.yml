@@ -1,0 +1,52 @@
+name: iOS-ipa-build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: 🎉 iOS Build
+    runs-on: macos-14  # ✅ Xcode 15+/16 environment
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 💻 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          architecture: x64
+
+      - name: 📦 Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: 🧼 Clean & Re-install CocoaPods
+        run: |
+          rm -rf ios/Pods
+          rm -rf ios/.symlinks
+          rm -rf ios/Flutter/Flutter.framework
+          rm -rf ios/Flutter/Flutter.podspec
+          rm -rf ios/Podfile.lock
+          cd ios
+          pod repo update
+          pod install
+
+      - name: 🛠️ Build iOS (no code sign)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📦 Prepare IPA
+        run: |
+          mkdir -p build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload
+          cd build/ios/iphoneos
+          zip -qq -r -9 FlutterIpaExport.ipa Payload
+
+      - name: 🚀 Upload .ipa to GitHub Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          tag: v1.0
+          overwrite: true
+          body: "📱 iOS IPA built via GitHub Actions"
