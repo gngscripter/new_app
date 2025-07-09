@@ -6,7 +6,7 @@ on:
 jobs:
   build-ios:
     name: 🎉 iOS Build
-    runs-on: macos-14  # ✅ Xcode 15+/16 environment
+    runs-on: macos-15  # ✅ Xcode 15+/16 environment
 
     steps:
       - name: 📥 Checkout Repository
