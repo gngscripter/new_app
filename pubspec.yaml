@@ -12,9 +12,9 @@ dependencies:
     sdk: flutter
   pie_chart:
   cupertino_icons:
-  firebase_core:
-  firebase_auth:
-  cloud_firestore:
+  firebase_core: 3.14.0
+  firebase_auth: 5.5.0
+  cloud_firestore: 5.5.0
   fl_chart:
   intl:
 
